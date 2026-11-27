@@ -17,18 +17,17 @@ public final class SelfHideScreen extends Screen {
     @Override
     protected void init() {
         int left = this.width / 2 - 105;
-        int y = this.height / 2 - 105;
-        addToggle("SelfHide: ", () -> SelfHideConfig.enabled, value -> SelfHideConfig.enabled = value, left, y);
-        addToggle("Hide entire player: ", () -> SelfHideConfig.hidePlayer, value -> SelfHideConfig.hidePlayer = value, left, y += 27);
-        addToggle("Hide helmet: ", () -> SelfHideConfig.hideHelmet, value -> SelfHideConfig.hideHelmet = value, left, y += 27);
-        addToggle("Hide chestplate: ", () -> SelfHideConfig.hideChestplate, value -> SelfHideConfig.hideChestplate = value, left, y += 27);
-        addToggle("Hide leggings: ", () -> SelfHideConfig.hideLeggings, value -> SelfHideConfig.hideLeggings = value, left, y += 27);
-        addToggle("Hide boots: ", () -> SelfHideConfig.hideBoots, value -> SelfHideConfig.hideBoots = value, left, y += 27);
-        addToggle("Hide armor accessories: ", () -> SelfHideConfig.hideAccessories, value -> SelfHideConfig.hideAccessories = value, left, y += 27);
+        int y = this.height / 2 - 35;
+
+        addToggle("Hide player: ", () -> SelfHideConfig.hidePlayer,
+            value -> SelfHideConfig.hidePlayer = value, left, y);
+        addToggle("Hide armor: ", () -> SelfHideConfig.hideArmor,
+            value -> SelfHideConfig.hideArmor = value, left, y + 27);
+
         addRenderableWidget(Button.builder(Component.literal("Done"), button -> {
             SelfHideConfig.save();
             Minecraft.getInstance().gui.setScreen(parent);
-        }).bounds(left, y + 30, 210, 20).build());
+        }).bounds(left, y + 57, 210, 20).build());
     }
 
     private void addToggle(String label, java.util.function.BooleanSupplier getter,
