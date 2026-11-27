@@ -48,6 +48,6 @@ public final class SelfHideScreen extends Screen {
     @Override
     public void onClose() {
         SelfHideConfig.save();
-        Minecraft.getInstance().setScreen(parent);
+        Minecraft.getInstance().gui.setScreen(parent);
     }
 }
