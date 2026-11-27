@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "selfhide",
+  "version": "${version}",
+  "name": "SelfHide",
+  "description": "Client-side player and armor visibility controls.",
+  "authors": ["10kilos"],
+  "license": "MIT",
+  "environment": "client",
+  "entrypoints": {
+    "client": ["dev.selfhide.SelfHideClient"]
+  },
+  "mixins": [
+    {
+      "config": "selfhide.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=0.19.0",
+    "minecraft": "26.3",
+    "java": ">=25",
+    "fabric-api": ">=0.166.2+26.3"
+  }
+}
