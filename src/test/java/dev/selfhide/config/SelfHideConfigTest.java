@@ -3,47 +3,41 @@ package dev.selfhide.config;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SelfHideConfigTest {
     @AfterEach
     void reset() {
-        SelfHideConfig.enabled = false;
         SelfHideConfig.hidePlayer = false;
-        SelfHideConfig.hideHelmet = false;
-        SelfHideConfig.hideChestplate = false;
-        SelfHideConfig.hideLeggings = false;
-        SelfHideConfig.hideBoots = false;
-        SelfHideConfig.hideAccessories = false;
+        SelfHideConfig.hideArmor = false;
     }
 
     @Test
-    void everyVisibilityOptionDefaultsToOff() {
-        reset();
-        assertFalse(SelfHideConfig.enabled);
-        assertFalse(SelfHideConfig.hidePlayer);
-        assertFalse(SelfHideConfig.hideHelmet);
-        assertFalse(SelfHideConfig.hideChestplate);
-        assertFalse(SelfHideConfig.hideLeggings);
-        assertFalse(SelfHideConfig.hideBoots);
-        assertFalse(SelfHideConfig.hideAccessories);
+    void bothOptionsDefaultToOff() {
+        assertFalse(SelfHideConfig.shouldHidePlayer());
+        assertFalse(SelfHideConfig.shouldHideArmor());
     }
 
     @Test
-    void masterSwitchOverridesEnabledIndividualOptions() {
-        SelfHideConfig.hideHelmet = true;
-        assertFalse(SelfHideConfig.shouldHideArmor(SelfHideConfig.ArmorPart.HELMET));
-        SelfHideConfig.enabled = true;
-        assertTrue(SelfHideConfig.shouldHideArmor(SelfHideConfig.ArmorPart.HELMET));
+    void hidePlayerIsIndependentFromHideArmor() {
+        SelfHideConfig.hidePlayer = true;
+        assertTrue(SelfHideConfig.shouldHidePlayer());
+        assertFalse(SelfHideConfig.shouldHideArmor());
     }
 
     @Test
-    void armorSlotsAreIndependent() {
-        SelfHideConfig.enabled = true;
-        SelfHideConfig.hideHelmet = true;
-        assertTrue(SelfHideConfig.shouldHideArmor(SelfHideConfig.ArmorPart.HELMET));
-        assertFalse(SelfHideConfig.shouldHideArmor(SelfHideConfig.ArmorPart.CHESTPLATE));
-        assertFalse(SelfHideConfig.shouldHideArmor(SelfHideConfig.ArmorPart.LEGGINGS));
-        assertFalse(SelfHideConfig.shouldHideArmor(SelfHideConfig.ArmorPart.BOOTS));
+    void hideArmorHidesAllArmorAsOneSetting() {
+        SelfHideConfig.hideArmor = true;
+        assertTrue(SelfHideConfig.shouldHideArmor());
+        assertFalse(SelfHideConfig.shouldHidePlayer());
+    }
+
+    @Test
+    void bothOptionsCanBeEnabledTogether() {
+        SelfHideConfig.hidePlayer = true;
+        SelfHideConfig.hideArmor = true;
+        assertTrue(SelfHideConfig.shouldHidePlayer());
+        assertTrue(SelfHideConfig.shouldHideArmor());
     }
 }

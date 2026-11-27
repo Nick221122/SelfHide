@@ -1,15 +1,12 @@
 # SelfHide
 
-A client-only Fabric mod for Minecraft Java 26.3 that changes how **your own avatar** is rendered on your screen. It does not alter equipment, send gameplay packets, or change how other players see you.
+A client-only Fabric mod for Minecraft Java 26.3. It changes only how your own player is rendered on your screen. It does not change server state, send gameplay packets, or change how other players see you.
 
 ## Features
 
-- Master enable switch.
-- Hide your own player model.
-- Independently hide helmet, chestplate, leggings, and boots.
-- Hide avatar cosmetics and accessories such as cape, shoulder parrots, and extra ears.
+- **Hide player:** hides your complete local player model, including armor, accessories, and your first-person arm.
+- **Hide armor:** hides all worn armor and supported avatar accessories together, without hiding your player model.
 - Settings persist in `config/selfhide.json`.
-- All options default to **OFF**.
 - Press **H** to open the settings screen. The key can be changed in Options → Controls → Key Binds.
 
 ## Build
