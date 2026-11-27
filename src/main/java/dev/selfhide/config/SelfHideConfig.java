@@ -10,7 +10,9 @@ import java.nio.file.Path;
 
 public final class SelfHideConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-    private static final Path PATH = FabricLoader.getInstance().getConfigDir().resolve("selfhide.json");
+    private static Path path() {
+        return FabricLoader.getInstance().getConfigDir().resolve("selfhide.json");
+    }
 
     public static boolean enabled = false;
     public static boolean hidePlayer = false;
@@ -21,9 +23,10 @@ public final class SelfHideConfig {
     public static boolean hideAccessories = false;
 
     public static void load() {
-        if (!Files.exists(PATH)) return;
+        Path path = path();
+        if (!Files.exists(path)) return;
         try {
-            Data data = GSON.fromJson(Files.readString(PATH), Data.class);
+            Data data = GSON.fromJson(Files.readString(path), Data.class);
             if (data == null) return;
             enabled = data.enabled;
             hidePlayer = data.hidePlayer;
@@ -39,8 +42,9 @@ public final class SelfHideConfig {
 
     public static void save() {
         try {
-            Files.createDirectories(PATH.getParent());
-            Files.writeString(PATH, GSON.toJson(new Data()));
+            Path path = path();
+            Files.createDirectories(path.getParent());
+            Files.writeString(path, GSON.toJson(new Data()));
         } catch (IOException exception) {
             System.err.println("[SelfHide] Could not save config: " + exception.getMessage());
         }
