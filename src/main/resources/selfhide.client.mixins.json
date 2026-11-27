@@ -3,7 +3,8 @@
   "package": "dev.selfhide.mixin",
   "compatibilityLevel": "JAVA_25",
   "client": [
-    "EntityRenderDispatcherMixin",
+    "AvatarRendererMixin",
+    "FirstPersonHandsAndItemsRendererMixin",
     "PlayerRendererMixin"
   ],
   "injectors": {
