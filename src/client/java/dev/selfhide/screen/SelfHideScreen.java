@@ -27,7 +27,7 @@ public final class SelfHideScreen extends Screen {
         addToggle("Hide armor accessories: ", () -> SelfHideConfig.hideAccessories, value -> SelfHideConfig.hideAccessories = value, left, y += 27);
         addRenderableWidget(Button.builder(Component.literal("Done"), button -> {
             SelfHideConfig.save();
-            Minecraft.getInstance().setScreen(parent);
+            Minecraft.getInstance().gui.setScreen(parent);
         }).bounds(left, y + 30, 210, 20).build());
     }
 
