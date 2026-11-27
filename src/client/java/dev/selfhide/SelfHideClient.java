@@ -7,23 +7,23 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import org.lwjgl.sdl.SDLScancode;
+import net.minecraft.client.InputConstants;
+import org.lwjgl.glfw.GLFW;
 
 public final class SelfHideClient implements ClientModInitializer {
-    public static final String MOD_ID = "selfhide";
     private KeyMapping openSettingsKey;
 
     @Override
     public void onInitializeClient() {
         SelfHideConfig.load();
         openSettingsKey = KeyMappingHelper.registerKeyMapping(
-            new KeyMapping("key.selfhide.settings", net.minecraft.client.InputConstants.Type.KEYSYM,
-                SDLScancode.SDL_SCANCODE_H, KeyMapping.Category.MISC)
+            new KeyMapping("key.selfhide.settings", InputConstants.Type.KEYSYM,
+                GLFW.GLFW_KEY_H, KeyMapping.Category.MISC)
         );
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (openSettingsKey.consumeClick()) {
-                if (client.player != null && client.screen == null) {
-                    client.setScreen(new SelfHideScreen(null));
+                if (client.player != null && client.gui.getCurrentScreen() == null) {
+                    Minecraft.getInstance().gui.setScreen(new SelfHideScreen(null));
                 }
             }
         });
