@@ -1,5 +1,5 @@
 plugins {
-    id 'net.fabricmc.fabric-loom' version '1.15.+' 
+    id 'net.fabricmc.fabric-loom' version '1.15.+'
 }
 
 version = project.mod_version
@@ -11,9 +11,6 @@ base {
 
 repositories {
     mavenCentral()
-}
-
-    }
 }
 
 dependencies {
