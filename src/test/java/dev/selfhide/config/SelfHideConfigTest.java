@@ -46,4 +46,16 @@ class SelfHideConfigTest {
         assertFalse(SelfHideConfig.shouldHideArmor(SelfHideConfig.ArmorPart.LEGGINGS));
         assertFalse(SelfHideConfig.shouldHideArmor(SelfHideConfig.ArmorPart.BOOTS));
     }
+
+    @Test
+    void hidingThePlayerRequiresBothMasterSwitchAndPlayerOption() {
+        SelfHideConfig.hidePlayer = true;
+        assertFalse(SelfHideConfig.shouldHidePlayer());
+
+        SelfHideConfig.enabled = true;
+        assertTrue(SelfHideConfig.shouldHidePlayer());
+
+        SelfHideConfig.hidePlayer = false;
+        assertFalse(SelfHideConfig.shouldHidePlayer());
+    }
 }
