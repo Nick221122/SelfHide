@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class PieChartOutputTest {
     @Test
-    void showsOnlyNamesAndSkipsUnspecifiedAndPercentages() {
+    void showsOnlyShortNamesWithoutMinecraftNamespaceOrPercentages() {
         List<ResultField> entries = List.of(
             new ResultField("blockEntities", 100.0, 100.0, 1),
             new ResultField("unspecified", 63.10, 63.10, 1),
@@ -19,7 +19,7 @@ class PieChartOutputTest {
             new ResultField("minecraft:mob_spawner", 4.01, 4.01, 1),
             new ResultField("minecraft:chest", 0.77, 0.77, 1)
         );
-        assertEquals(List.of("minecraft:trial_spawner", "minecraft:vault", "minecraft:mob_spawner", "minecraft:chest"),
+        assertEquals(List.of("trial_spawner", "vault", "mob_spawner", "chest"),
             PieChartOutput.formatVisibleEntries(entries));
     }
 
@@ -31,8 +31,16 @@ class PieChartOutputTest {
         for (int i = 1; i <= 11; i++) entries.add(new ResultField("minecraft:entry_" + i, i, i, 1));
         List<String> output = PieChartOutput.formatVisibleEntries(entries);
         assertEquals(9, output.size());
-        assertEquals("minecraft:entry_1", output.get(0));
-        assertEquals("minecraft:entry_9", output.get(8));
+        assertEquals("entry_1", output.get(0));
+        assertEquals("entry_9", output.get(8));
+    }
+
+    @Test
+    void preservesNonMinecraftNamespaces() {
+        assertEquals(List.of("example:custom_block_entity"), PieChartOutput.formatVisibleEntries(List.of(
+            new ResultField("blockEntities", 100.0, 100.0, 1),
+            new ResultField("example:custom_block_entity", 100.0, 100.0, 1)
+        )));
     }
 
     @Test
