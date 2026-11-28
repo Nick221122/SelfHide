@@ -6,6 +6,8 @@ import dev.piechart.mixin.ProfilerPieChartAccessor;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.debugchart.ProfilerPieChart;
 import net.minecraft.network.chat.Component;
@@ -13,45 +15,69 @@ import net.minecraft.util.profiling.ProfileResults;
 import net.minecraft.util.profiling.ResultField;
 
 public final class PieChartClient implements ClientModInitializer {
+    private static final int CAPTURE_TICKS = 10;
     private static final int MAX_SEARCH_DEPTH = 32;
+    private static final ProfilerCaptureWindow CAPTURE_WINDOW = new ProfilerCaptureWindow();
+    private static FabricClientCommandSource pendingCommandSource;
 
     @Override
     public void onInitializeClient() {
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) ->
             dispatcher.register(ClientCommands.literal("piechart").executes(context -> {
-                ProfilerPieChart chart = Minecraft.getInstance().getDebugOverlay().getProfilerPieChart();
-                ProfileResults results = ((ProfilerPieChartAccessor) chart).piechart$getResults();
-
-                if (results == null) {
-                    context.getSource().sendFeedback(Component.literal(
-                        "PieChart: Open the vanilla profiler pie chart (F3 + 1) and wait for it to collect data."
-                    ));
+                if (CAPTURE_WINDOW.isActive()) {
+                    context.getSource().sendError(Component.literal("PieChart is already collecting profiler data."));
                     return 0;
                 }
 
-                String blockEntitiesPath = findBlockEntitiesPath(results);
-                if (blockEntitiesPath == null) {
-                    context.getSource().sendFeedback(Component.literal(
-                        "PieChart: No Block Entities section was found in the current profiler data."
-                    ));
-                    return 0;
-                }
-
-                List<String> entries = PieChartOutput.formatVisibleEntries(results.getTimes(blockEntitiesPath));
-                if (entries.isEmpty()) {
-                    context.getSource().sendFeedback(Component.literal(
-                        "PieChart: The Block Entities section has no visible entries."
-                    ));
-                    return 0;
-                }
-
-                context.getSource().sendFeedback(Component.literal("Block Entities:"));
-                for (String entry : entries) {
-                    context.getSource().sendFeedback(Component.literal(entry));
-                }
-                return entries.size();
+                pendingCommandSource = context.getSource();
+                CAPTURE_WINDOW.start(CAPTURE_TICKS);
+                return 1;
             }))
         );
+
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            if (!CAPTURE_WINDOW.tick()) {
+                return;
+            }
+
+            FabricClientCommandSource source = pendingCommandSource;
+            pendingCommandSource = null;
+            if (source == null) {
+                return;
+            }
+
+            ProfilerPieChart chart = Minecraft.getInstance().getDebugOverlay().getProfilerPieChart();
+            ProfileResults results = ((ProfilerPieChartAccessor) chart).piechart$getResults();
+            if (results == null) {
+                source.sendError(Component.literal("PieChart: Minecraft did not produce profiler data. Try again in a world."));
+                return;
+            }
+
+            String blockEntitiesPath = findBlockEntitiesPath(results);
+            if (blockEntitiesPath == null) {
+                source.sendError(Component.literal("PieChart: No Block Entities section was found in the profiler data."));
+                return;
+            }
+
+            List<String> entries = PieChartOutput.formatVisibleEntries(results.getTimes(blockEntitiesPath));
+            if (entries.isEmpty()) {
+                source.sendFeedback(Component.literal("Block Entities:"));
+                return;
+            }
+
+            source.sendFeedback(Component.literal("Block Entities:"));
+            for (String entry : entries) {
+                source.sendFeedback(Component.literal(entry));
+            }
+        });
+    }
+
+    /**
+     * Used by the Minecraft mixin to collect the vanilla profiler silently,
+     * without turning on the visible F3 profiler chart.
+     */
+    public static boolean isAutomaticCaptureActive() {
+        return CAPTURE_WINDOW.isActive();
     }
 
     private static String findBlockEntitiesPath(ProfileResults results) {
