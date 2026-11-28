@@ -3,7 +3,8 @@
   "package": "dev.piechart.mixin",
   "compatibilityLevel": "JAVA_25",
   "client": [
-    "ProfilerPieChartAccessor"
+    "ProfilerPieChartAccessor",
+    "MinecraftProfilerMixin"
   ],
   "injectors": {
     "defaultRequire": 1
