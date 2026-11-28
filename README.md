@@ -6,12 +6,13 @@ A small client-only Fabric mod for Minecraft Java 26.3.
 
 Run `/piechart` to print the entries and percentages from the vanilla profiler's **Block Entities** section in chat.
 
-- Uses the profiler data collected by Minecraft's normal pie chart; it does not scan chunks or count blocks.
+- Automatically collects the vanilla profiler data in the background for a short capture window.
+- Does not require opening the F3 debug screen or pressing F3 + 1.
+- Keeps the vanilla profiler chart hidden while collecting.
+- Does not scan chunks or count blocks.
 - Prints the same child percentages used by the pie chart (relative to the Block Entities section).
 - Prints only the entries the vanilla chart displays (up to its nine numbered child entries).
 - No HUD, settings, coordinates, or server-side code.
-
-Open the vanilla profiler pie chart with **F3 + 1**, allow it to collect profiling data, and run `/piechart`. The command finds the Block Entities node in the current profiler results; if that section has no collected entries, it reports that instead.
 
 ## Build
 
