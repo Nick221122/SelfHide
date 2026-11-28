@@ -8,18 +8,21 @@ import net.minecraft.util.profiling.ResultField;
 
 public final class PieChartOutput {
     private static final int MAX_VISIBLE_CHILDREN = 9;
+    private static final String MINECRAFT_NAMESPACE = "minecraft:";
 
     private PieChartOutput() {
     }
 
-    /** Returns only named block-entity types; hides the synthetic unspecified bucket and percentages. */
+    /** Returns concise names only; hides the synthetic unspecified bucket, namespace and percentages. */
     public static List<String> formatVisibleEntries(List<ResultField> pieChartEntries) {
         if (pieChartEntries == null || pieChartEntries.size() <= 1) return List.of();
 
         List<String> output = new ArrayList<>();
         for (int index = 1; index < pieChartEntries.size() && output.size() < MAX_VISIBLE_CHILDREN; index++) {
-            ResultField entry = pieChartEntries.get(index);
-            if (!entry.name.equalsIgnoreCase("unspecified")) output.add(entry.name);
+            String name = pieChartEntries.get(index).name;
+            if (name.equalsIgnoreCase("unspecified")) continue;
+            if (name.startsWith(MINECRAFT_NAMESPACE)) name = name.substring(MINECRAFT_NAMESPACE.length());
+            output.add(name);
         }
         return List.copyOf(output);
     }
