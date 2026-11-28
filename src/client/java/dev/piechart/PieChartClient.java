@@ -1,5 +1,6 @@
 package dev.piechart;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import dev.piechart.mixin.MinecraftProfilerAccessor;
@@ -96,19 +97,20 @@ public final class PieChartClient implements ClientModInitializer {
     }
 
     private static String findBlockEntitiesPath(ProfileResults results) {
-        SearchResult search = new SearchResult();
-        findBlockEntitiesPath(results, "root", false, 0, search);
-        return search.levelPath != null ? search.levelPath : search.fallbackPath;
+        List<PieChartOutput.BlockEntitiesPathCandidate> candidates = new ArrayList<>();
+        findBlockEntitiesPaths(results, "root", false, false, 0, candidates);
+        return PieChartOutput.selectBlockEntitiesPath(candidates);
     }
 
-    private static void findBlockEntitiesPath(
+    private static void findBlockEntitiesPaths(
         ProfileResults results,
         String path,
         boolean insideLevel,
+        boolean insideTick,
         int depth,
-        SearchResult search
+        List<PieChartOutput.BlockEntitiesPathCandidate> candidates
     ) {
-        if (depth >= MAX_SEARCH_DEPTH || search.levelPath != null) {
+        if (depth >= MAX_SEARCH_DEPTH) {
             return;
         }
 
@@ -123,24 +125,25 @@ public final class PieChartClient implements ClientModInitializer {
             boolean childInsideLevel = insideLevel
                 || child.name.equalsIgnoreCase("level")
                 || child.name.equalsIgnoreCase("levels");
+            boolean childInsideTick = insideTick || child.name.equalsIgnoreCase("tick");
 
             if (child.name.equalsIgnoreCase("blockEntities") || child.name.equalsIgnoreCase("block entities")) {
-                if (childInsideLevel && search.levelPath == null) {
-                    search.levelPath = childPath;
-                } else if (search.fallbackPath == null) {
-                    search.fallbackPath = childPath;
+                List<ResultField> entries = results.getTimes(childPath);
+                int childCount = entries == null ? 0 : Math.max(0, entries.size() - 1);
+                int typedChildCount = 0;
+                if (entries != null) {
+                    for (int entryIndex = 1; entryIndex < entries.size(); entryIndex++) {
+                        if (!entries.get(entryIndex).name.equalsIgnoreCase("unspecified")) {
+                            typedChildCount++;
+                        }
+                    }
                 }
+                candidates.add(new PieChartOutput.BlockEntitiesPathCandidate(
+                    childPath, typedChildCount, childCount, childInsideTick, childInsideLevel
+                ));
             }
 
-            findBlockEntitiesPath(results, childPath, childInsideLevel, depth + 1, search);
-            if (search.levelPath != null) {
-                return;
-            }
+            findBlockEntitiesPaths(results, childPath, childInsideLevel, childInsideTick, depth + 1, candidates);
         }
-    }
-
-    private static final class SearchResult {
-        private String levelPath;
-        private String fallbackPath;
     }
 }
