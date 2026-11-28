@@ -3,6 +3,7 @@ package dev.piechart;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 
 import net.minecraft.util.profiling.ResultField;
 
@@ -13,21 +14,20 @@ public final class PieChartOutput {
     private PieChartOutput() {
     }
 
-    /** Returns concise names only; hides the synthetic unspecified bucket, namespace and percentages. */
+    /** Returns concise names and percentages; hides the synthetic unspecified bucket and default namespace. */
     public static List<String> formatVisibleEntries(List<ResultField> pieChartEntries) {
         if (pieChartEntries == null || pieChartEntries.size() <= 1) return List.of();
-
         List<String> output = new ArrayList<>();
         for (int index = 1; index < pieChartEntries.size() && output.size() < MAX_VISIBLE_CHILDREN; index++) {
-            String name = pieChartEntries.get(index).name;
+            ResultField entry = pieChartEntries.get(index);
+            String name = entry.name;
             if (name.equalsIgnoreCase("unspecified")) continue;
             if (name.startsWith(MINECRAFT_NAMESPACE)) name = name.substring(MINECRAFT_NAMESPACE.length());
-            output.add(name);
+            output.add(name + ": " + String.format(Locale.ROOT, "%.2f%%", entry.percentage));
         }
         return List.copyOf(output);
     }
 
-    /** Chooses the most informative Block Entities branch when multiple profiler branches exist. */
     public static String selectBlockEntitiesPath(List<BlockEntitiesPathCandidate> candidates) {
         if (candidates == null || candidates.isEmpty()) return null;
         return candidates.stream()
