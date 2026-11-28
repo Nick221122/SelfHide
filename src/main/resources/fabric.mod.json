@@ -1,18 +1,18 @@
 {
   "schemaVersion": 1,
-  "id": "selfhide",
+  "id": "piechart",
   "version": "${version}",
-  "name": "SelfHide",
-  "description": "Client-side player and armor visibility controls.",
+  "name": "PieChart",
+  "description": "Prints the visible Block Entities profiler pie-chart entries and percentages in chat.",
   "authors": ["10kilos"],
   "license": "MIT",
   "environment": "client",
   "entrypoints": {
-    "client": ["dev.selfhide.SelfHideClient"]
+    "client": ["dev.piechart.PieChartClient"]
   },
   "mixins": [
     {
-      "config": "selfhide.client.mixins.json",
+      "config": "piechart.client.mixins.json",
       "environment": "client"
     }
   ],

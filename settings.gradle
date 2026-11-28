@@ -6,4 +6,4 @@ pluginManagement {
     }
 }
 
-rootProject.name = 'SelfHide'
+rootProject.name = 'PieChart'

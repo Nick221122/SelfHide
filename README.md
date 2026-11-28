@@ -1,26 +1,23 @@
-# SelfHide
+# PieChart
 
-A client-only Fabric mod for Minecraft Java 26.3 that changes how **your own avatar** is rendered on your screen. It does not alter equipment, send gameplay packets, or change how other players see you.
+A small client-only Fabric mod for Minecraft Java 26.3.
 
-## Features
+## Command
 
-- Master enable switch.
-- Hide your own player model.
-- Independently hide helmet, chestplate, leggings, and boots.
-- Hide avatar cosmetics and accessories such as cape, shoulder parrots, and extra ears.
-- Settings persist in `config/selfhide.json`.
-- All options default to **OFF**.
-- Press **H** to open the settings screen. The key can be changed in Options → Controls → Key Binds.
+Run `/piechart` to print the entries and percentages from the vanilla profiler's **Block Entities** section in chat.
+
+- Uses the profiler data collected by Minecraft's normal pie chart; it does not scan chunks or count blocks.
+- Prints the same child percentages used by the pie chart (relative to the Block Entities section).
+- Prints only the entries the vanilla chart displays (up to its nine numbered child entries).
+- No HUD, settings, coordinates, or server-side code.
+
+Open the vanilla profiler pie chart with **F3 + 1**, allow it to collect profiling data, and run `/piechart`. The command finds the Block Entities node in the current profiler results; if that section has no collected entries, it reports that instead.
 
 ## Build
 
-Requires JDK 25. Run:
+Requires JDK 25. Run `gradle --no-daemon clean test build`. The mod JAR is written to `build/libs/`.
 
-```bash
-gradle --no-daemon clean test build
-```
-
-The compiled mod is in `build/libs/`. GitHub Actions builds and tests the project on pushes to `main`, and uploads the JAR as the `SelfHide-Minecraft-26.3` workflow artifact.
+GitHub Actions runs tests and the build on pushes to `main`, pull requests, and manual workflow dispatch.
 
 ## Compatibility
 

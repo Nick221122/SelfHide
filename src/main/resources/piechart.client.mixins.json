@@ -1,0 +1,11 @@
+{
+  "required": true,
+  "package": "dev.piechart.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "client": [
+    "ProfilerPieChartAccessor"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
